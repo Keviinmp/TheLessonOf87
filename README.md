@@ -4,14 +4,6 @@ Fan game educativo hecho en Unity como proyecto de fin de grado (CFGS Desarrollo
 
 Recorres el mapa de la primera entrega de FNAF en primera persona e interactúas con objetos del entorno para responder preguntas de inglés. Si fallas 3 veces, salta un jumpscare con el personaje de esa prueba.
 
-## Capturas
-
-![[Pasted image 20261103022917.png|383]]
-![[Pasted image 20261103023222.png|389]]
-![[Pasted image 20261103023357.png]]
-![[Pasted image 20261103023453.png|391]]
-![[Pasted image 20261103023608.png|395]]
-
 ## Qué incluye el código
 
 - Sistema de pruebas con 4 bancos de preguntas en JSON (gramática, vocabulario, traducción, sinónimos y antónimos), 300 preguntas cada uno, generadas con IA.
