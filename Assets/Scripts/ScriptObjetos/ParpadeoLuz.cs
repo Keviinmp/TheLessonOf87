@@ -1,16 +1,18 @@
 using UnityEngine;
 
+/// <summary>Hace parpadear la luz del objeto a intervalos aleatorios.</summary>
 public class ParpadeoLuz : MonoBehaviour
 {
-    // Referencia al componente Light del mismo GameObject
+    /// <summary>Componente <c>Light</c> del mismo objeto.</summary>
     private Light _light;
 
-    // Tiempo mínimo entre cambios de estado del parpadeo
+    /// <summary>Tiempo mínimo entre cambios de estado, en segundos.</summary>
     public float minTime = 0.05f;
 
-    // Tiempo máximo entre cambios de estado del parpadeo
+    /// <summary>Tiempo máximo entre cambios de estado, en segundos.</summary>
     public float maxTime = 0.2f;
 
+    /// <summary>Obtiene la luz del objeto e inicia la corrutina de parpadeo.</summary>
     void Start() {
         // Obtiene el componente Light asociado al objeto
         _light = GetComponent<Light>();
@@ -19,6 +21,7 @@ public class ParpadeoLuz : MonoBehaviour
         StartCoroutine(Flicker());
     }
 
+    /// <summary>Alterna el estado de la luz en bucle, con una espera aleatoria entre cambios.</summary>
     System.Collections.IEnumerator Flicker() {
         // Bucle infinito controlado por coroutine
         // El parpadeo solo se detiene si se desactiva o destruye el objeto

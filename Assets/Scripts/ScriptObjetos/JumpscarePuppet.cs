@@ -3,40 +3,48 @@ using UnityEngine.Video;
 using System.Collections;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// Secuencia del Puppet: al pulsar E en su zona se apaga la música, parpadean luces y objetos, suena su voz y se reproduce un vídeo final, tras el que se vuelve al menú.
+/// </summary>
 public class JumpscarePuppet : MonoBehaviour
 {
-    // Música ambiente que se detiene al iniciar el evento
+    /// <summary>Música ambiente que se detiene al iniciar el evento.</summary>
     public AudioSource MusicaBox;
 
-    // Audio previo al diálogo y voz principal del Puppet
+    /// <summary>Audio previo a la voz del Puppet.</summary>
     public AudioSource audioInicio;
+    /// <summary>Voz principal del Puppet.</summary>
     public AudioSource vozPuppet;
 
-    // Scripts externos que deben quedar deshabilitados durante la secuencia
+    /// <summary>Scripts que se deshabilitan durante la secuencia (por ejemplo, los de rotación).</summary>
     public MonoBehaviour[] scriptsRotacion;
 
-    // Componentes del vídeo final
+    /// <summary>Reproductor del vídeo final.</summary>
     public VideoPlayer videoPlayer;
+    /// <summary>Superficie donde se reproduce el vídeo.</summary>
     public GameObject pantallaVideo;
 
+    /// <summary>Luces del grupo 1, que parpadean sincronizadas con su objeto.</summary>
     [Header("Grupo 1")]
 
-    // Primer conjunto visual que parpadea sincronizado
     public Light[] ledsGrupo1;
+    /// <summary>Objeto del grupo 1 que se activa y desactiva junto a sus luces.</summary>
     public GameObject objeto1;
 
+    /// <summary>Luces del grupo 2, que parpadean de forma independiente al grupo 1.</summary>
     [Header("Grupo 2")]
 
-    // Segundo conjunto visual independiente del primero
     public Light[] ledsGrupo2;
+    /// <summary>Objeto del grupo 2 que se activa y desactiva junto a sus luces.</summary>
     public GameObject objeto2;
 
-    // Evita volver a ejecutar la secuencia
+    /// <summary>Evita ejecutar la secuencia más de una vez.</summary>
     private bool activado;
 
-    // Estado del jugador respecto al trigger
+    /// <summary>Indica si el jugador está dentro del trigger.</summary>
     private bool enZona;
 
+    /// <summary>Se suscribe al evento de fin del vídeo.</summary>
     void Start()
     {
         // Ejecuta el método videoAcabado cuando acaba el video del jumpscare
@@ -44,6 +52,9 @@ public class JumpscarePuppet : MonoBehaviour
             videoPlayer.loopPointReached += VideoAcabado;
     }
 
+    /// <summary>
+    /// Lanza la secuencia si el jugador pulsa E dentro del trigger y aún no se ha ejecutado.
+    /// </summary>
     void Update() {
         // Sale inmediatamente si el evento ya está ejecutándose
         if (activado) 
@@ -54,18 +65,30 @@ public class JumpscarePuppet : MonoBehaviour
             StartCoroutine(Cutscene());
         }
     }
+
+    /// <summary>
+    /// Marca que el jugador puede interactuar.
+    /// </summary>
+    /// <param name="other">Collider que entra en el trigger.</param>
     void OnTriggerEnter(Collider other) {
         // Marca disponibilidad de interacción
         if (other.CompareTag("Player")) 
             enZona = true;
     }
 
+    /// <summary>
+    /// Cancela la posibilidad de interactuar al salir del área.
+    /// </summary>
+    /// <param name="other">Collider que sale del trigger.</param>
     void OnTriggerExit(Collider other) {
         // Cancela interacción fuera del área
         if (other.CompareTag("Player"))
             enZona = false;
     }
 
+    /// <summary>
+    /// Secuencia principal: detiene la música, desactiva scripts, inicia el parpadeo y las voces, y reproduce el vídeo cuando termina la voz.
+    /// </summary>
     IEnumerator Cutscene() {
         // Bloquea futuras ejecuciones
         activado = true;
@@ -103,7 +126,7 @@ public class JumpscarePuppet : MonoBehaviour
         PlayVideo();
     }
 
-    // Grupo 1 mantiene sincronía entre luces y objeto asociado
+    /// <summary>Parpadeo aleatorio del grupo 1: luces y objeto comparten el mismo estado.</summary>
     IEnumerator ParpadeoGrupo1() {
         while (activado)
         {
@@ -125,7 +148,7 @@ public class JumpscarePuppet : MonoBehaviour
         }
     }
 
-    // Grupo 2 ejecuta el mismo sistema pero desacoplado temporalmente
+    /// <summary>Parpadeo aleatorio del grupo 2, independiente del primero.</summary>
     IEnumerator ParpadeoGrupo2() {
         while (activado) {
             bool estado = Random.value > 0.5f;
@@ -143,7 +166,7 @@ public class JumpscarePuppet : MonoBehaviour
         }
     }
 
-    // Método que activa el sistema de vídeo del jumpscare
+    /// <summary>Muestra la pantalla de vídeo y reproduce el jumpscare.</summary>
     void PlayVideo() {
         Debug.Log("PLAY VIDEO EJECUTADO");
 
@@ -156,7 +179,10 @@ public class JumpscarePuppet : MonoBehaviour
             videoPlayer.Play();
     }
 
-    // Método jecutado automáticamente al finalizar el vídeo
+    /// <summary>
+    /// Se ejecuta al acabar el vídeo: lo detiene, oculta la pantalla, libera el cursor y vuelve al menú.
+    /// </summary>
+    /// <param name="vp">Reproductor que ha terminado.</param>
     void VideoAcabado(VideoPlayer vp) {
         // Limpieza del reproductor
         if (videoPlayer != null)

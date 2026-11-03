@@ -1,77 +1,94 @@
 using UnityEngine;
 
-public class Interactuable : MonoBehaviour
-{
-    // Índice que identifica qué prueba/puzzle pertenece a este objeto interactuable
+/// <summary>Objeto con el que el jugador interactúa para responder una pregunta de su prueba.</summary>
+public class Interactuable : MonoBehaviour {
+    /// <summary>Índice del banco de preguntas que pertenece a este objeto.</summary>
     public int indicePrueba = 0;
 
-    // Sistema de gestión de preguntas del juego
+    /// <summary>Sistema que carga y proporciona las preguntas.</summary>
     public PreguntasManager preguntasManager;
 
-    // UI de diálogo donde se muestra la pregunta al jugador
+    /// <summary>Interfaz usada para mostrar la pregunta y recoger la respuesta.</summary>
     public DialogoUI dialogoUI;
 
-    // Sistema de feedback visual (luces, estados de pruebas, etc.)
+    /// <summary>Sistema que muestra el progreso mediante luces.</summary>
     public LucesPruebasManager lucesPruebasManager;
 
-    // Método principal de interacción llamado desde el sistema de input/raycast
-    // Encargado de iniciar el flujo de pregunta → respuesta → feedback
-    public void Interactuar()
-    {
-        // Evita interacción simultánea si ya hay un diálogo abierto
-        if (DialogoUI.EstaAbierto)
-            return;
 
-        // Guarda el índice de la prueba actual en el GameManager global
+    /// <summary>
+    /// Inicia la interacción: carga las preguntas de la prueba, elige una al azar y abre el diálogo.
+    /// </summary>
+    public void Interactuar() {
+
+        // Evita abrir varios diálogos simultáneamente
+        if (DialogoUI.EstaAbierto) {
+            return;
+        }
+
+        // Guarda la prueba actual para acceso global desde GameManager
         GameManager.Instance.indicePruebaActual = indicePrueba;
 
-        // Validación del sistema de preguntas
-        if (preguntasManager == null)
-        {
-            Debug.LogError("PreguntasManager NO asignado en " + gameObject.name);
+        // Comprueba que el sistema de preguntas exista
+        if (preguntasManager == null) {
+            Debug.LogError(
+                "PreguntasManager NO asignado en " + gameObject.name
+            );
+
             return;
         }
 
-        // Validación del sistema de UI
-        if (dialogoUI == null)
-        {
-            Debug.LogError("DialogoUI NO asignado en " + gameObject.name);
+        // Comprueba que exista una interfaz de diálogo
+        if (dialogoUI == null) {
+            Debug.LogError(
+                "DialogoUI NO asignado en " + gameObject.name
+            );
+
             return;
         }
 
-        // Carga el conjunto de preguntas asociado a esta prueba
+        // Carga el conjunto de preguntas correspondiente a esta prueba
         preguntasManager.CargarPorIndice(indicePrueba);
 
-        // Obtiene una pregunta aleatoria del pool cargado
+        // Obtiene una pregunta aleatoria del conjunto cargado
         Pregunta p = preguntasManager.GetPreguntaRandom();
 
-        // Evita continuar si no hay datos válidos
-        if (p == null)
-        {
+        // Cancela el flujo si no existen preguntas válidas
+        if (p == null) {
             Debug.LogError("No hay preguntas cargadas");
             return;
         }
 
-        // Abre el diálogo de UI y define callback de respuesta correcta
-        dialogoUI.Abrir(p.pregunta, p.respuesta, OnRespuestaCorrecta);
+        // Abre el diálogo enviando pregunta, respuesta y el callback para respuesta correcta
+        dialogoUI.Abrir(
+            p.pregunta,
+            p.respuesta,
+            OnRespuestaCorrecta
+        );
     }
 
-    // Método que se ejecuta cuando el jugador responde bien
-    // Activa el progreso de la prueba en el sistema de luces
-    private void OnRespuestaCorrecta()
-    {
-        // Si no está asignado, intenta resolverlo
-        if (lucesPruebasManager == null)
-            lucesPruebasManager = FindFirstObjectByType<LucesPruebasManager>();
 
-        // Validación final del sistema de feedback visual
-        if (lucesPruebasManager == null)
-        {
-            Debug.LogError("LucesPruebasManager NO asignado en " + gameObject.name);
+    /// <summary>Se ejecuta cuando el jugador responde bien: enciende la luz de la prueba completada.</summary>
+    private void OnRespuestaCorrecta() {
+
+        // Busca el sistema de luces si no fue asignado manualmente
+        if (lucesPruebasManager == null) {
+            lucesPruebasManager =
+                FindFirstObjectByType<LucesPruebasManager>();
+        }
+
+        // Comprueba que el sistema exista antes de continuar
+        if (lucesPruebasManager == null) {
+            Debug.LogError(
+                "LucesPruebasManager NO asignado en "
+                + gameObject.name
+            );
+
             return;
         }
 
-        // Activa el siguiente estado visual asociado a la prueba superada
-        lucesPruebasManager.ActivarLuz(indicePrueba + 1);
+        // Activa la luz asociada a la prueba completada
+        lucesPruebasManager.ActivarLuz(
+            indicePrueba + 1
+        );
     }
 }
